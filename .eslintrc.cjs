@@ -11,6 +11,9 @@ module.exports = {
 	parserOptions: {
 		ecmaVersion: 'latest',
 	},
+	env: {
+		'vue/setup-compiler-macros': true,
+	},
 	rules: {
 		'no-console': process.env.MODE_ENV === 'production' ? 'error' : 'off',
 		'prettier/prettier': [
