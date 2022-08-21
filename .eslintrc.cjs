@@ -27,6 +27,7 @@ module.exports = {
 				pritWidth: 80,
 				bracketSpacing: true,
 				arrowParens: 'avoid',
+				endOfLine: 'auto',
 			},
 		],
 	},
