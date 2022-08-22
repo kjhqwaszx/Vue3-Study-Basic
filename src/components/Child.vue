@@ -1,19 +1,19 @@
 <template>
 	<div class="card">
-		<div class="card-header">
-			<slot name="header">#header</slot>
-		</div>
+		<div class="card-header">Child Component</div>
 		<div class="card-body">
-			<slot>#body</slot>
-		</div>
-		<div class="card-footer text-muted">
-			<slot name="footer">#footer </slot>
+			<DeepChild></DeepChild>
 		</div>
 	</div>
 </template>
 
 <script>
+import DeepChild from './DeepChild.vue';
+
 export default {
+	components: {
+		DeepChild,
+	},
 	setup() {
 		return {};
 	},

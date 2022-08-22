@@ -4,6 +4,7 @@
 	[ Component 관련해서는 Vue2.0과 비슷하다. ]
 	- props
   - emit
+	- provide & inject
   
   props & event branch참고
 -->
@@ -61,4 +62,77 @@ export default {
 	},
 };
 </script>
+
+<!-- 
+  3. provide & inject
+    - 부모 컴포넌트에서 자식 컴포넌트에게 데이터를 전달 할 경우 props 속성을 사용하지만
+		  컴포넌트가 더 깊어지면 props를 사용하는데 한계가 있다. 이때, provide와 inject를 사용한다.
+		- 하위 컴포넌트에 제공할 데이터는 상위 컴포넌트에서 setup() 부분에 provide('주입key', '주입value')  이렇게 선언한다.
+ -->
+
+<!-- 부모 컴포넌트 -->
+<template>
+	<div class="container py-4">
+		<div class="card">
+			<div class="card-header">ProvideInject Component</div>
+			<div class="card-body"><Child></Child></div>
+			<button @click="count++">click</button>
+		</div>
+	</div>
+</template>
+
+<script>
+import { provide, ref } from 'vue';
+import Child from './Child.vue';
+export default {
+	components: {
+		Child,
+	},
+	setup() {
+		const staticMessage = 'static message';
+		const message = ref('message');
+		const count = ref(10);
+
+		provide('static-message', staticMessage);
+		provide('message', message);
+		provide('count', count);
+		return { count };
+	},
+};
+</script>
+
+<style lang="scss" scoped></style>
+
+<!-- Deep자식 컴포넌트-->
+
+<template>
+	<div class="card">
+		<div class="card-header">Deep Child Component</div>
+		<div class="card-body">
+			<p>staticMessage: {{ staticMessage }}</p>
+			<p>message: {{ message }}</p>
+			<p>count: {{ count }}</p>
+		</div>
+	</div>
+</template>
+
+<script>
+import { inject } from 'vue';
+export default {
+	setup() {
+		//inject의 두번째 param은 값이 없을경우 나오는 데이터이다.
+		const staticMessage = inject('static-message', 'default message');
+		const message = inject('message');
+		const count = inject('count');
+		return {
+			staticMessage,
+			message,
+			count,
+		};
+	},
+};
+</script>
+
+<style lang="scss" scoped></style>
+
 /* eslint-enable */
