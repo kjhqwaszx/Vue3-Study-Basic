@@ -229,6 +229,7 @@ export default {
 																		</script>
 
 		- props와 emit을 선언할때 defineProps() & defineEmits()를 사용한다 (<script setup> 전용 메서드 )
+		- <script> 와 <script setup>는 같이 사용할 수 있다.
 
 -->
 
@@ -318,5 +319,14 @@ const toggleLike = () => {
 </script>
 
 <style scoped></style>
+
+<!-- 
+  [ 동적 컴포넌트 ] _ DynamicComponent.vue
+	 - 컴포넌트를 동적으로 변경하고 싶을 때 :is 속성을 사용해서 변경할 수 있다. ( 기존의 view-link 전환 및 v-if로 컴포넌트 전환 대체)
+			-> <component :is="컴포넌트 이름"></component>
+	 - 
+
+
+ -->
 
 /* eslint-enable */
