@@ -5,6 +5,7 @@
 	- props
   - emit
 	- provide & inject
+	- Life Cycle Hook
   
   props & event branch참고
 -->
@@ -134,5 +135,18 @@ export default {
 </script>
 
 <style lang="scss" scoped></style>
+
+<!-- 
+  3. Life Cycle Hook
+    - 크게 Creation(생성) -> Mounting(장착) -> Updating(수정) -> Destruction(소멸) 로 볼수 있다.
+		- Creation(생성): 가장 빠른 시점이며 Dom에 추가되기 전이므로 this 접근이 불가능하다.
+		  -> setup()
+		- Mounting(장착): DOM에 컴포넌트를 삽입하는 단계이다.
+			->  onBeforeMount, onMounted가 있으며 setup() 함수 내부에서 사용된다.
+		- Updating(수정): 반응형 데이터가 변경되어 화면에 다시 렌더링 될때 호출된다.
+			-> onBeforeUpdate, onUpdated    ** 화면이 바뀌어야(렌더링) 호출된다.
+		- Destruction: 마운트가 해제될 때 시점이다. 예를들어 자식 컴포넌트가 v-if=false 로 사라질 때 자식컴포넌트에서 발생된다.
+			-> onBeforeUnmount, onUnmounted
+ -->
 
 /* eslint-enable */
