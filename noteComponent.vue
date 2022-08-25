@@ -42,7 +42,7 @@ export default {
 <!-- 
   2. emit
     - 자식 컴포넌트에서 부모 컴포넌트에게 이벤트를 발생시킬 때 사용한다.
-    - Vue2때와는 다르게 this.$emit('이벤트명', parm) 으로 호출이 불가능
+    - Vue2때와는 다르게 this.$emit('이벤트명', parm) 으로 호출이 불가능 -> setup()에서는 렌더링 전이므로 this 접근 불가
     - setup(props, context)에서 context.emit('이벤트명')으로 호출하고
       props:['속성명'] 처럼
       emits:['이벤트명'] or emit:{} 객체형으로 선언할 수 있다.
@@ -148,5 +148,175 @@ export default {
 		- Destruction: 마운트가 해제될 때 시점이다. 예를들어 자식 컴포넌트가 v-if=false 로 사라질 때 자식컴포넌트에서 발생된다.
 			-> onBeforeUnmount, onUnmounted
  -->
+
+<!-- 
+		[ Template refs ]
+		 - Dom 요소에 직접 접근해야 하는 경우 ref 속성을 사용해서 접근할 수 있다.
+
+-->
+
+<template>
+	<div>
+		<input type="text" ref="input" />
+		<!-- input은 렌더링 이후에 값이 할당되기 때문에 v-if를 해주어야 오류가 안난다 -->
+		<p v-if="input">{{ input.value }}, {{ $refs.input.value }}</p>
+		<hr />
+
+		<ul>
+			<!-- ref를 string 값으로 선언 -->
+			<!-- <li v-for="fruit in fruits" :key="fruit" ref="itemRefs">{{ fruit }}</li> -->
+
+			<!-- ref를 function으로 선언 -->
+			<li
+				v-for="fruit in fruits"
+				:key="fruit"
+				:ref="el => itemRefs.push(el.textContent)"
+			>
+				{{ fruit }}
+			</li>
+		</ul>
+	</div>
+</template>
+
+<script>
+import { onMounted, ref } from 'vue';
+export default {
+	setup() {
+		//ref가 input인 태그 조사
+		const input = ref(null);
+
+		// 렌더링 이후 접근이 가능하므로 mounted 이후 접근이 가능하다.
+		onMounted(() => {
+			input.value.value = 'Hello World!!';
+			console.log(input.value);
+
+			// string으로 전달할 경우
+			// itemRefs.value.forEach(item => {
+			// 	console.log(item.textContent);
+			// });
+
+			//함수로 전달할 경우
+			itemRefs.value.forEach(item => {
+				console.log(item);
+			});
+		});
+
+		const fruits = reactive(['사과', '딸기', '포도']);
+		const itemRefs = ref([]);
+		return {
+			input,
+			fruits,
+			itemRefs,
+		};
+	},
+};
+</script>
+
+<style lang="scss" scoped></style>
+
+<!-- 
+	[ script setup ]  _ ScriptSetup.vue 
+	  - Single File Component 내에서 Composition API를 사용하기 위한 태그
+		- 별다른 return이 없어도 된다.
+
+		<script setup>									<script>
+			console.log('hi');			==  		export default {
+		</script>														setup() {
+																					console.log('hi');				
+																					return {};
+																				},
+																			}
+																		</script>
+
+		- props와 emit을 선언할때 defineProps() & defineEmits()를 사용한다 (<script setup> 전용 메서드 )
+
+-->
+
+<!-- return 없이 사용 가능하다. -->
+
+<template>
+	<div class="container py-4">
+		{{ msg }}
+		<br />
+		{{ message }}
+		<button @click="sayHello">click</button>
+		<PostItem
+			type="news"
+			title="제목"
+			contents="내용"
+			is-like="true"
+		></PostItem>
+	</div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import PostItem from '@/components/setup/PostItem.vue';
+//components:{} 를 선언하지 않아도 된다.
+
+const msg = 'Hello World!!';
+const message = ref('');
+const sayHello = () => alert('Hello');
+
+//return이 없어도 사용이 가능하다.
+</script>
+
+<style lang="scss" scoped></style>
+
+<!-- props, emit 선언 변경 __ setupPostItem.vue -->
+<template>
+	<div class="card">
+		<div class="card-body">
+			<!-- type: news, notice -->
+			<span class="badge bg-secondary">
+				{{ typeName }}
+			</span>
+			<h5 class="card-title red" mt-2>{{ title }}</h5>
+			<p class="card-text">
+				{{ contents }}
+			</p>
+			<a ref="" href="#" :class="isLikeClass" @click="toggleLike">좋아요</a>
+		</div>
+	</div>
+</template>
+
+<script setup>
+import { computed } from 'vue';
+const props = defineProps({
+	type: {
+		type: String,
+		default: 'news',
+		validator: value => {
+			return ['news', 'notice'].includes(value);
+		},
+	},
+	title: {
+		type: String,
+		required: true,
+	},
+	contents: {
+		type: String,
+		// required: true,
+	},
+	isLike: {
+		type: Boolean,
+		default: false,
+	},
+});
+
+const emit = defineEmits(['toggle-like']);
+
+const isLikeClass = computed(() =>
+	props.isLike ? 'btn btn-danger' : 'btn btn-outline-danger',
+);
+
+const typeName = computed(() => (props.type === 'news' ? '뉴스' : '공지사항'));
+
+const toggleLike = () => {
+	emit('toggle-like');
+};
+</script>
+
+<style scoped></style>
 
 /* eslint-enable */
